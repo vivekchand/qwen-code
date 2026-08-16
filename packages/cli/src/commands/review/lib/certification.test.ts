@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen
+ * Copyright 2026 Qwen Team
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -80,6 +80,24 @@ describe('declaresOwnUncoverable', () => {
     );
   });
 
+  it('vetoes a declaration preceded by prose on an earlier line (pins /m)', () => {
+    expect(
+      declaresOwnUncoverable(
+        rec({ finalText: `Read what I could.\n${declaring}` }),
+        3,
+      ),
+    ).toBe(true);
+  });
+
+  it('matches a lowercase marker (pins /i)', () => {
+    expect(
+      declaresOwnUncoverable(
+        rec({ finalText: 'uncoverable: chunk 3 — binary payload' }),
+        3,
+      ),
+    ).toBe(true);
+  });
+
   it('ignores a declaration indented into prose', () => {
     // The `^` anchor with only whitespace allowed before the marker: a
     // quoted line inside a bullet does not match.
@@ -98,6 +116,12 @@ describe('openedBrief / readBrief', () => {
     expect(openedBrief(r, PLAN, key)).toBe(true);
   });
 
+  it('does not credit a record that made zero successful tool calls', () => {
+    // `[].every(...)` is true: the existential quantifier needs its own
+    // negative, like its two sibling atoms already have.
+    expect(openedBrief(rec({}), PLAN, key)).toBe(false);
+  });
+
   it('does not credit a sibling file sharing the prefix', () => {
     const bak = JSON.stringify(`${briefPath(PLAN, key)}.bak`);
     const r = rec({ successfulCallArgs: [`{"absolute_path":${bak}}`] });
@@ -107,6 +131,12 @@ describe('openedBrief / readBrief', () => {
   it('does not credit another key’s brief', () => {
     const r = rec({ successfulCallArgs: [arg] });
     expect(openedBrief(r, PLAN, 'chunk-3')).toBe(false);
+  });
+
+  it('readBrief does not credit a sibling file sharing the prefix', () => {
+    const bak = JSON.stringify(`${briefPath(PLAN, key)}.bak`);
+    const r = rec({ successfulReadFileArgs: [`{"absolute_path":${bak}}`] });
+    expect(readBrief(r, PLAN, key)).toBe(false);
   });
 
   it('readBrief requires a successful read_file, not a mention', () => {
@@ -126,6 +156,12 @@ describe('readFindingsPointer', () => {
 
   it('owes nothing when the prompt names no pointer', () => {
     expect(readFindingsPointer(rec({}), null)).toBe(true);
+  });
+
+  it('does not credit a sibling of the pointer', () => {
+    const bak = JSON.stringify(`${pointer}.bak`);
+    const r = rec({ successfulReadFileArgs: [`{"absolute_path":${bak}}`] });
+    expect(readFindingsPointer(r, pointer)).toBe(false);
   });
 
   it('requires a successful read_file of the exact pointer', () => {

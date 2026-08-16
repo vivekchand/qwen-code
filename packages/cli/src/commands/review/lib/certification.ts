@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Qwen
+ * Copyright 2026 Qwen Team
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -16,7 +16,9 @@
  * assigned. Five review rounds found five places where a re-implemented copy
  * of one of these atoms drifted from the original; this module exists so
  * there is nothing left to drift. Compositions still differ per consumer —
- * that is their job — but each atom has exactly one definition.
+ * that is their job — and the `returned` question stays a plain field read
+ * (`rec.returned`) at each site rather than an atom here; every OTHER atom
+ * has exactly one definition below.
  */
 
 import type { AgentRecord } from './transcripts.js';
@@ -28,7 +30,7 @@ import { briefPath } from './prompt-record.js';
  * number is captured so the veto can stay scoped to the declarer's own
  * territory.
  */
-export const UNCOVERABLE_RE = /^\s*Uncoverable:\s*chunk\s+(\d+)\b/im;
+const UNCOVERABLE_RE = /^\s*Uncoverable:\s*chunk\s+(\d+)\b/im;
 
 /**
  * The chunk a KEY assigns: `chunk-13` → 13, and the per-chunk audit shapes —

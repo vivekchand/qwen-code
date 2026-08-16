@@ -1568,7 +1568,7 @@ export function verificationGaps(
     // replaced: the floor proves the findings file was OPENED (one successful
     // read_file of the path — no other tool's args count), not that it was
     // paged to completion — `read_file` truncates, so a first-page-only read
-    // still leaves a matching `fNeedle`.
+    // still leaves a matching serialized pointer (the needle built inside `readFindingsPointer`).
     // The old `wasDeliveredVerbatim` required the whole list in the delivered
     // prompt; the pointer proves delivery of the pointer line, not receipt of
     // the whole list. Accepted: the brief now orders the full read, and a

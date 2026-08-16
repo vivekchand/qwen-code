@@ -102,9 +102,10 @@ const ROUND_IN_KEY_RE = /--round-(\d+)(?:--|$)/;
  * It used to be a re-implementation, and re-implementing a bar means drifting
  * from it: five review rounds found five branches where the copy was weaker
  * than the original. The atoms now come from `lib/certification.ts` — the
- * one definition each of returned, the chunk-scoped uncoverable veto, the
+ * one definition each of the chunk-scoped uncoverable veto, the
  * brief-opened floor, and the findings-pointer read — so what remains here
- * is only the composition recovery needs.
+ * is only the composition recovery needs (the `returned` field read among
+ * them).
  */
 function meetsBar(
   rec: AgentRecord,
